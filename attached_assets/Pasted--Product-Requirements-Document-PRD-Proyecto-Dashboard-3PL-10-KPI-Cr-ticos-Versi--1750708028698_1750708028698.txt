@@ -1,0 +1,273 @@
+# Product Requirements Document (PRD)
+
+**Proyecto:** **Dashboard 3PL – 10 KPI Críticos**
+**Versión:** 1.0
+**Fecha:** 23 Jun 2025
+**Autor:** BI & Analytics Lead (ChatGPT)
+**Destino:** Asistente de código (Replit) para generar front-end + back-end.
+
+---
+
+## 1. Visión y propósito
+
+Crear un **dashboard web single-page** que permita a operadores 3PL y a sus clientes visualizar, profundizar y descargar información de **10 KPI** fundamentales de almacén y transporte. El objetivo es exponer el desempeño operativo en tiempo real, acelerar la toma de decisiones y estandarizar la medición entre diferentes cuentas de clientes.
+
+---
+
+## 2. Objetivos SMART
+
+| Objetivo                                    | Métrica de éxito                   | Fecha límite      |
+| ------------------------------------------- | ---------------------------------- | ----------------- |
+| Visualizar los 10 KPI en tiempo < 3 s       | Latencia p95 render inicial        | **T + 6 semanas** |
+| Permitir drill-down a nivel orden/recepción | Tasa de clics “Ver detalle” > 20 % | **T + 7 semanas** |
+| Descargar datos detallados en CSV           | % descargas sin error = 100 %      | **T + 8 semanas** |
+| Seguridad multicliente (RLS)                | 0 incidentes de fuga de datos      | Go-live           |
+
+---
+
+## 3. Alcance
+
+### 3.1 In scope
+
+* Cálculo y exposición de **Días On Hand, Daños, IRA, Dock-to-Stock, Despachos On Time, Exactitud Picking, Lead Time Interno, Ready On Time, Productividad Despacho, OTIF**.
+* ETL incremental diario desde WMS/ERP (archivos CSV o API).
+* Front-end **React + TypeScript + Tailwind + ECharts**.
+* Back-end **Node/Express + Prisma + PostgreSQL**.
+* Alertas por email cuando OTIF < 95 %.
+* Roles: **Admin** (ve todo), **Cliente** (solo sus datos).
+
+### 3.2 Out of scope
+
+* Modelado de costos logísticos u optimización.
+* Forecast de demanda o inventario.
+* Mobile app nativa (la web será responsive).
+
+---
+
+## 4. Stakeholders
+
+| Rol           | Responsable               | Interés                             |
+| ------------- | ------------------------- | ----------------------------------- |
+| Sponsor       | Javier Cabada (CEO ePRAC) | ROI & satisfacción del cliente      |
+| Product Owner | Gerente BI                | Priorización de funcionalidades     |
+| Equipo Dev    | Full-stack team (Replit)  | Entregar código                     |
+| Cliente final | 3PL customers             | Visibilidad y decisiones operativas |
+
+---
+
+## 5. Usuarios y necesidades
+
+| Persona                        | Necesidad clave                     | KPI prioritario                         |
+| ------------------------------ | ----------------------------------- | --------------------------------------- |
+| **Gerente de Operaciones 3PL** | Detectar cuellos de botella diarios | Dock-to-Stock, Lead Time, Productividad |
+| **Gerente de Cuenta Cliente**  | Asegurar cumplimiento de SLA        | OT, OTIF, Ready OT                      |
+| **Supervisor de Bodega**       | Entrenar y corregir pickers         | Exactitud Picking, Daños                |
+| **C-Level**                    | Resumen ejecutivo rápido            | 10 tarjetas KPI con semáforo            |
+
+---
+
+## 6. Suposiciones y dependencias
+
+* WMS entrega timestamps exactos (`UTC`) para eventos inbound/outbound.
+* PostgreSQL 14 disponible con 8 vCPU / 32 GB RAM.
+* Las métricas objetivo (targets) se proveen en tabla `dim_kpi_targets`.
+
+---
+
+## 7. Requerimientos funcionales
+
+| ID      | Descripción                                                                                 | Prioridad |
+| ------- | ------------------------------------------------------------------------------------------- | --------- |
+| **F-1** | Mostrar 10 tarjetas KPI con valor actual, delta vs target y mini sparkline.                 | Must      |
+| **F-2** | Abrir modal de detalle al hacer clic en una tarjeta (3 tabs: Trend, Distribución, Detalle). | Must      |
+| **F-3** | Slicers globales de rango de fechas, cliente y proveedor.                                   | Must      |
+| **F-4** | Exportar la tabla Detalle a CSV (respeta filtros activos).                                  | Must      |
+| **F-5** | Alertar por email diario si OTIF < 95 % o DOH > objetivo × 1.2.                             | Should    |
+| **F-6** | Autenticación JWT & control de acceso (Admin/Cliente).                                      | Must      |
+| **F-7** | Soportar > 500 k filas sin perder performance (< 4 s p95).                                  | Must      |
+| **F-8** | Panel de configuración de umbrales por KPI (solo Admin).                                    | Could     |
+| **F-9** | API REST versionada (`/api/v1/…`).                                                          | Must      |
+
+---
+
+## 8. Requerimientos no funcionales
+
+| Categoría          | Detalle                                                       |
+| ------------------ | ------------------------------------------------------------- |
+| **Rendimiento**    | Latencia p95 < 3 s overview; < 2 s modal tras caché.          |
+| **Escalabilidad**  | 100 usuarios concurrentes, 20 clientes.                       |
+| **Seguridad**      | OWASP Top-10, RLS en SQL, datos en reposo cifrados (AES-256). |
+| **Disponibilidad** | 99.5 % SLO.                                                   |
+| **Accesibilidad**  | WCAG 2.1 AA para colores y textos.                            |
+| **i18n**           | Soporte ES-MX y EN-US mediante i18next.                       |
+
+---
+
+## 9. Diseño de datos
+
+### 9.1 Modelo estrella (nombres físicos)
+
+```mermaid
+erDiagram
+    FACT_INBOUND ||--o{ DIM_TIME : "arrival_date_fk"
+    FACT_OUTBOUND ||--o{ DIM_TIME : "released_date_fk"
+    FACT_INVENTORY ||--o{ DIM_TIME : "snapshot_date_fk"
+    FACT_INBOUND }o--|| DIM_PROVIDER : "provider_id"
+    FACT_OUTBOUND }o--|| DIM_CLIENT : "client_id"
+    FACT_OUTBOUND }o--|| DIM_TEAM : "team_id"
+    FACT_INVENTORY }o--|| DIM_SKU : "sku"
+```
+
+### 9.2 Campos clave y lógica KPI
+
+| KPI           | Tabla base      | Campos                            | Fórmula SQL resumida                       |
+| ------------- | --------------- | --------------------------------- | ------------------------------------------ |
+| DOH           | FACT\_INVENTORY | `stock_qty`, `avg_daily_demand`   | `stock_qty / NULLIF(avg_daily_demand,0)`   |
+| Daños         | FACT\_INBOUND   | `damaged_units`, `received_units` | `SUM(damaged)/SUM(received)`               |
+| IRA           | FACT\_INVENTORY | `system_qty`, `physical_qty`      | `1-ABS(sys-phy)/phy`                       |
+| Dock-to-Stock | FACT\_INBOUND   | `arrival_at`, `putaway_at`        | `EXTRACT(EPOCH FROM putaway-arrival)/3600` |
+| …             | …               | …                                 | …                                          |
+
+Percentiles (P50/P90) vía `percentile_cont` PostgreSQL.
+
+---
+
+## 10. API
+
+### 10.1 Endpoints
+
+| Método | Ruta                        | Parámetros          | Descripción                   |
+| ------ | --------------------------- | ------------------- | ----------------------------- |
+| GET    | `/api/v1/kpis/overview`     | `from,to,clientId?` | Devuelve array 10 KPI.        |
+| GET    | `/api/v1/kpis/:code/detail` | `from,to,clientId?` | Trend + distrib + tabla.      |
+| POST   | `/api/v1/auth/login`        | body:{email,pwd}    | JWT 24 h.                     |
+| GET    | `/api/v1/alerts`            | –                   | Solo Admin, lista de alertas. |
+
+### 10.2 Ejemplo respuesta `overview`
+
+```json
+[
+  { "code":"DOH","label":"Días On Hand","value":12.4,"target":15,"trend":[10.2,11.1,12.4] },
+  …
+]
+```
+
+---
+
+## 11. Arquitectura software
+
+```
+┌────────────────────────────┐
+│        Front-end           │  React 18 + Vite + Tailwind
+└────────────┬───────────────┘
+             │ REST
+┌────────────▼───────────────┐
+│      Node/Express API      │  JWT, rate-limit
+├────────────┬───────────────┤
+│   Prisma ORM (Postgres)    │
+└────────────┴───────────────┘
+             │ ETL (cron / Airbyte)
+┌────────────▼───────────────┐
+│      Raw Staging Tables    │
+└────────────────────────────┘
+```
+
+* **Caching:** `node-cache` 1 min for overview; Redis opcional.
+* **Background jobs:** `node-cron` para alertas y ETL incremental.
+
+---
+
+## 12. UI / UX detallado
+
+### 12.1 DashboardPage
+
+```
+┌────────────────────────────────────────────┐
+│ DateRange   Cliente   Proveedor  ⟳Refresh │  ← FilterBar
+├────────────────────────────────────────────┤
+│ KPI GRID (2 col mobile / 5 col desktop)   │
+│ ┌────────┐ ┌────────┐ … 10 tarjetas       │
+│ │  DOH   │ │  IRA   │                     │
+│ └────────┘ └────────┘                     │
+└────────────────────────────────────────────┘
+```
+
+* **KpiCard** props: `code, value, target, delta, sparkData`.
+* Color semáforo vía util `status(value,target)`.
+
+### 12.2 KpiModal
+
+* Dialog Head: Nombre KPI + target.
+* Tabs: **Trend** (línea 90 d), **Distribución** (box-plot o pareto), **Detalle** (tabla virtualizada).
+* Export: botón “CSV” llama `GET /detail?...&format=csv`.
+
+### 12.3 Responsive
+
+* < 640 px → 2 columnas KPI, modales fullscreen.
+* > 1024 px → 5 columnas KPI, modales max-w-5xl.
+
+---
+
+## 13. Alarmas y SLA
+
+| Alarma   | Condición                    | Canal      | Severidad |
+| -------- | ---------------------------- | ---------- | --------- |
+| Low OTIF | OTIF < 95 % en última semana | Email ops@ | Alta      |
+| High DOH | DOH > 1.2 × target           | Email      | Media     |
+
+---
+
+## 14. Métricas de aceptación
+
+1. **Funcional** – suite Cypress 100 % verde.
+2. **Performance** – lighthouse score perf ≥ 85 mobile.
+3. **Seguridad** – pruebas OWASP ZAP sin hallazgos críticos.
+4. **UX** – entrevistas con 3 usuarios: rating > 4/5 utilidad.
+
+---
+
+## 15. Roadmap de alto nivel
+
+| Semana | Hitos                                        |
+| ------ | -------------------------------------------- |
+| 0      | Kick-off, setup repo monorepo Turbo.         |
+| 1      | Modelo Prisma & seed; endpoints `/overview`. |
+| 2      | Front KPI grid + fetch SWR; auth JWT.        |
+| 3      | Modales detalle + gráficos ECharts.          |
+| 4      | ETL incremental + percentiles SQL.           |
+| 5      | Alertas email + RLS Postgres.                |
+| 6      | QA, stress test, hardening.                  |
+| 7      | UAT con 2 clientes piloto.                   |
+| 8      | Go-live producción.                          |
+
+---
+
+## 16. Riesgos y mitigación
+
+| Riesgo                      | Impacto        | Prob | Mitigación                        |
+| --------------------------- | -------------- | ---- | --------------------------------- |
+| Datos faltantes o atrasados | KPI imprecisos | M    | Validaciones ETL + dummy 0-values |
+| Carga 500 k + filas lento   | UX pobre       | M    | Agregaciones y Redis cache        |
+| Cambios de SLA por cliente  | Confusión      | L    | Tabla de targets editable         |
+
+---
+
+## 17. Preguntas abiertas
+
+1. ¿Qué herramienta exacta de email (SendGrid, SES) prefiere IT?
+2. ¿Hay política corporativa de retención de datos (> 2 años)?
+3. ¿Necesitamos firma SAML/SSO o basta JWT + MFA?
+
+---
+
+## 18. Glosario
+
+* **DOH** – Days on Hand.
+* **D2S** – Dock to Stock.
+* **IRA** – Inventory Record Accuracy.
+* **OTIF** – On Time In Full.
+* **Ready OT** – Órdenes listas antes del cut-off.
+
+---
+
+**Fin del PRD** – listo para copiar en el asistente de código y generar el proyecto.

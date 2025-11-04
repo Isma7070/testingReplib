@@ -1,0 +1,62 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador Ready On Time
+(Describe qué debe mejorarse; el asistente de código decidirá cómo implementarlo.)
+
+1. Tarjeta KPI (dashboard)
+Observación	Mejora sugerida
+Título en inglés (“Ready On Time”) dentro de un tablero mayoritariamente en español.	Cambiar a “Órdenes listas a tiempo” y añadir tooltip “% de pedidos que alcanzan estado ‘ready’ antes del corte operativo”.
+Delta actual “↑ 10.0 % vs 90.0 %” mezcla símbolo “%” con puntos porcentuales.	Mostrar como “↑ 10 pp vs 90 %” (pp = puntos porcentuales) para mantener consistencia con otros KPI.
+Sparkline carece de referencia visual del objetivo.	Sombrear la zona ≥ 90 % en verde claro; debajo, gris.
+Badge Bueno está bien, pero conviene alinear el color verde con el tono de chips en tablas.	Usar #28A745 (o el verde corporativo definido).
+
+2. Modal – pestaña Tendencia
+Observación	Mejora sugerida
+Bloque azul de definición ocupa espacio vertical.	Convertir en ícono “?” con tooltip desplegable.
+Gráfica Y arranca en 0 %. Para variaciones 80-100 % pierde resolución.	Rango Y dinámico 70-100 % o 80-100 %; banda verde ≥ 90 %.
+Faltan métricas de consistencia.	Añadir línea de media móvil (7 días) en gris para apreciar la tendencia real.
+Tarjetas resumen muestran “Desviación 10 %”.	Cambiar a “Desviación 10 pp” y mantener unidad en tarjetas (pp o % según corresponda).
+
+3. Pestaña Distribución
+Observación	Mejora sugerida
+Column chart solo presenta promedio por cliente.	Sustituir por box-plot o dot-plot que muestre la dispersión diaria; ayuda a ver clientes con alta variabilidad.
+Tabla Performance por Cliente usa Badges Bueno/Alerta basados en 95 %.	Definir reglas homogéneas:
+• Verde ≥ 90 %
+• Ámbar 85–< 90 %
+• Rojo < 85 %
+Faltan métricas de cola larga.	Añadir columna P90 (%) o “Peor día (%)” para resaltar incumplimientos esporádicos.
+
+4. Pestaña Detalle
+Observación	Mejora sugerida
+Columnas “Fecha Entrega” vs “Cumplimiento 100 %” generan dudas (fecha entrega ≠ cut-off).	Renombrar a “Fecha lista” y “% Cumplimiento corte” para evitar confusión con entrega final.
+Estado “Listo a tiempo / Retrasado” OK, pero colores deben coincidir con verde / rojo global.	Usar los mismos badges y colores que en Tarjeta y Distribución.
+Filtrado manual de retrasos.	Incluir switch “Mostrar solo retrasados” y quick-filter por cliente (chips).
+
+Fila desplegable
+Observación	Mejora sugerida
+Líneas de tiempo legibles, pero falta escala de referencia.	Añadir línea vertical o etiqueta para la hora de corte y destacar el punto “Listo antes del corte” en verde.
+Mensaje final narra todo el texto.	Resumir:
+«Orden lista 0.4 h antes del corte (15:00). Objetivo cumplido.»
+
+5. Manejo de datos
+Caso	Acción
+Órdenes con 0 % de cumplimiento (no listas para ningún corte).	Etiquetar estado “Sin preparar” con badge gris; ofrecer enlace para ver impedimentos.
+Periodo sin órdenes listas (p.ej., fin de semana).	Tarjeta muestra “ND” con badge gris “Sin registros”; ocultar sparkline.
+
+6. Coherencia & accesibilidad
+Unidades constantes: valor KPI y tablas siempre en “%” con un decimal.
+
+Colores semáforo: Verde #28A745, Ámbar #FFC107, Rojo #C82333 – idénticos en tarjetas, tablas y alertas.
+
+Tipografía: valores 32–36 px, unidades 14 px, labels 12 px.
+
+Tooltips / aria-label para icono de ayuda, badges y filtros; contrastes WCAG 2.1 AA.
+
+7. Acciones correctivas (botón “Ver recomendaciones”)
+Revisar tiempos de corte y capacidad de picking vs. demanda.
+
+Implementar alertas de preparación 1 h antes del corte.
+
+Aplicar balanceo de carga entre áreas de empaque en picos.
+
+Capacitar a supervisores en la priorización de órdenes urgentes.
+
+Con estos ajustes, el indicador Órdenes listas a tiempo aportará una visualización más coherente, resaltará verdaderas áreas de mejora y mantendrá un estilo uniforme con el resto del tablero.

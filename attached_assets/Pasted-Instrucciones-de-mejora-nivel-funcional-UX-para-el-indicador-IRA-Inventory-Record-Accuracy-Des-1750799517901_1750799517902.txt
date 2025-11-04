@@ -1,0 +1,114 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador IRA (Inventory Record Accuracy)
+Descripción para el equipo de desarrollo; no incluye código ni cambios de base de datos.
+
+1. Tarjeta KPI (dashboard)
+Valor principal
+
+Mostrar siempre con un decimal y símbolo “%” (ej.: 62.9 %).
+
+Delta vs objetivo
+
+Formato sugerido: «↓ 32.1 pp vs 95 %» (pp = puntos porcentuales); usar flecha y color rojo al tratarse de una brecha negativa.
+
+Badge de severidad
+
+Conservar “Crítico”; aplicar el mismo tono rojo corporativo adoptado en otros KPI.
+
+Sparkline
+
+Grosor 2 px; color degradado gris→rojo para reflejar desviación creciente.
+
+Añadir banda objetivo (95 %‒100 %) como línea base o sombreado al fondo para referencia rápida.
+
+Icono (checklist)
+
+Mantener tamaño y alineación coherentes con el resto de tarjetas.
+
+2. Modal de detalle
+2.1 Encabezado y mensajes
+Título único “IRA” + subtítulo “Análisis detallado”.
+
+Definición del KPI
+
+Convertir el recuadro azul en un tooltip desplegable para liberar espacio en la vista.
+
+Alerta operativa roja
+
+Texto corto y accionable: «La precisión de inventario es 62.9 % (objetivo 95 %). Incrementar la frecuencia de conteos cíclicos y validar procesos de picking.»
+
+Incluir enlace “Ver recomendaciones” a checklist de auditoría de inventario.
+
+2.2 Pestaña Tendencia
+Escala del eje Y
+
+Definir rango 50 %‒100 % (o mínimo 0.8 × objetivo) para que la variación sea visible; evitar la presión visual del eje 0 %.
+
+Banda objetivo
+
+Sombrear zona ≥ 95 % para resaltar desviaciones.
+
+Tarjetas resumen
+
+Orden y formato: Actual 62.9 % | Objetivo 95 % | Promed. 30 d 98 % | Desviación 32.1 pp.
+
+2.3 Pestaña Distribución
+Gráfica
+
+Sustituir columnas por box-plot de IRA por cliente, mostrando dispersión y outliers.
+
+Tabla “Performance por cliente”
+
+Columnas: Actual (%) | Objetivo (%) | Conteos | Estado.
+
+Badges Alerta o Crítico en tonos ámbar / rojo según desviación (> 2 pp y > 5 pp).
+
+2.4 Pestaña Detalle
+Tabla principal
+
+Columnas: SKU / Orden | Cliente | Qty Sistema | Qty Física | Precisión.
+
+Precisión en verde si 100 %, en rojo si < 97 %; iconografía ✓ / ✖ para reforzar.
+
+Fila desplegable
+
+Mostrar subtabla: SKU | Ubicación | Auditor | Sistema | Físico | Diferencia | Precisión | Causa.
+
+Diferencia destacada (rojo si ≠ 0, verde si 0).
+
+Agregar campo Causa predeterminado “–” y permitir registrar motivos (error de picking, daño, extravío, etc.).
+
+Resumen de auditor
+
+Banner al final de la subtabla: «Auditor 1 · 24/06/2025 · Precisión total 100 % · Diferencia total 0 unidades».
+
+Exportar CSV
+
+Mantener botón arriba a la derecha para consistencia con otros indicadores.
+
+3. Métricas de severidad sugeridas
+Precisión IRA	Estado	Acción recomendada
+≥ 99 %	Bueno (verde)	Mantener frecuencia de conteo mensual.
+95 %‒99 %	Alerta (ámbar)	Revisar procesos de ajuste y devoluciones.
+< 95 %	Crítico (rojo)	Implementar conteos cíclicos semanales y auditoría de procesos de picking/recepción.
+
+4. Coherencia y accesibilidad global
+Color semáforo: verde, ámbar, rojo idénticos en tarjetas, tablas y alertas para todo el dashboard.
+
+Unidades: usar “%” siempre con un decimal; evitar duplicar la palabra “por ciento”.
+
+Tipografía: valor KPI 32–36 px; unidades 14 px; labels y ejes 12 px.
+
+Leyendas y tooltips: «Valor Actual» (línea o puntos azules) y «Objetivo» (línea roja).
+
+ARIA & WCAG: añadir etiquetas aria-label a iconos, badges y enlaces; contrastes AA comprobados.
+
+5. Acciones correctivas rápidas (contenido para “Ver recomendaciones”)
+Verificar conteos de alta rotación cada 48 h.
+
+Implementar doble validación en transacciones de ajuste.
+
+Revisar configuración de unidades de medida y empaques multilote.
+
+Capacitar a los auditores en el procedimiento de conteo cíclico ABC.
+
+Estas directrices detallan qué ajustes visuales y de experiencia deben realizarse para que el indicador IRA resulte coherente con el resto del tablero y ofrezca información más clara y accionable.

@@ -1,0 +1,95 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador OTIF (On Time In Full)
+(Explica qué debe optimizarse; la solución técnica queda a cargo del asistente de código.)
+
+1. Calidad de datos y coherencia
+Hallazgo	Acción recomendada
+Tarjeta muestra 0 % mientras la gráfica revela valores 80-95 %.	1) Alinear el cálculo agregado de la tarjeta con la misma ventana y filtros de la serie temporal.
+2) Cuando no existan órdenes en el rango, mostrar badge gris “Sin registros” en lugar de 0 %.
+Delta «↓ 95 % vs 95 %» transmite poco valor.	Formato uniforme: «-95 pp vs 95 %» o «Sin datos» si el valor es ND.
+
+2. Tarjeta KPI (dashboard)
+Título: ampliar a “OTIF (Entregas a tiempo y completas)” y añadir tooltip.
+
+Badge severidad:
+
+Verde ≥ 95 %
+
+Ámbar 90- < 95 %
+
+Rojo < 90 %
+
+Sparkline: sombrear zona ≥ 95 % verde claro; debajo, gris.
+
+Indicador de tendencia: flecha ↑/↓ con diferencia en puntos porcentuales (pp).
+
+3. Modal – pestaña Tendencia
+Observación	Mejora
+Definición azul ocupa espacio.	Convertir en ícono “?” con tooltip.
+Eje Y 0-100 % dificulta ver variaciones 80-100 %.	Rango dinámico 70-100 %; banda verde ≥ 95 %.
+Faltan detalles de causa.	Añadir stacked area opcional (OT pero no IF, IF pero no OT) para ver la brecha de puntualidad vs completitud.
+Tarjetas resumen	Cambiar “Desviación 95 %” → “-x pp” calculada correctamente.
+
+4. Pestaña Distribución
+Reemplazar columna promedio por stacked bar (OTIF, solo OT, solo IF, ninguna) por cliente.
+
+Tabla Performance por Cliente
+
+Columnas: OTIF %, Solo OT %, Solo IF %, Órdenes, Estado.
+
+Ordenar por OTIF ascendente para destacar problemas.
+
+5. Pestaña Detalle
+5.1 Tabla principal
+Columna	Formato	Notas
+Orden	Texto con link	
+Cliente	Texto	Filtro chip
+Fecha promesa	YYYY-MM-DD	
+Fecha entrega	YYYY-MM-DD	Color rojo si tardía
+Cumplimiento OTIF	0 % / 100 %	
+Estado	Badge
+✓ Cumplida / ✕ OT tarde / ✕ IF incompleta / ✕ Ambos	Color semáforo
+
+Añadir filtro rápido “Mostrar solo fallidas”.
+
+5.2 Fila desplegable (Orden)
+Panel de evaluación
+
+Sección	Contenido
+On Time	Sí / No & delta días
+In Full	Sí / No & faltantes
+
+Funnel mini-gráfico: OT → IF → OTIF (valores 0/1) para visual rápido.
+
+Tabla SKU: SKU | Solicitado | Entregado | Diferencia | Estado línea (Completo / Faltante / Exceso).
+
+Mensaje de causa: texto rojo breve «OTIF fallido: tardío e incompleto (-1 día, -4 u)».
+
+6. Estados y colores
+Estado orden	Condición	Color / icono
+OTIF Cumplido	On Time y In Full	Verde ✓
+OT tardío	In Full, pero entrega fuera de fecha	Ámbar hora-reloj
+IF incompleto	On Time, pero faltantes	Ámbar caja rota
+OTIF fallido	Ni OT ni IF	Rojo ✕
+
+7. Filtros y segmentación
+Chips rápidos arriba de la tabla: Todos | Tardío | Incompleto | Ambos.
+
+Selector de cliente y rango de fechas ya sincronizado con el resto del dashboard.
+
+8. Exportaciones
+Botón “Exportar CSV” debe ofrecer dos opciones:
+
+Resumen OTIF.
+
+Detalle SKU para órdenes fallidas.
+
+9. Accesibilidad & UX global
+Unidades: siempre “%” con un decimal.
+
+Todo texto rojo/ámbar con iconos para usuarios daltónicos.
+
+aria-label en iconos, badges y botones.
+
+Verificar contraste WCAG 2.1 AA en badges rojo/ámbar sobre fondo blanco.
+
+Implementando estas mejoras, el indicador OTIF mostrará cifras coherentes, ayudará a identificar la raíz específica de cada incumplimiento (tardío vs incompleto) y proporcionará visibilidad SKU-nivel en un formato claro y accionable.

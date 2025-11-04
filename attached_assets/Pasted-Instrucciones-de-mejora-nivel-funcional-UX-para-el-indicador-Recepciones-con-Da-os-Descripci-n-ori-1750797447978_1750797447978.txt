@@ -1,0 +1,106 @@
+Instrucciones de mejora (nivel funcional/UX) para el indicador Recepciones con Daños
+Descripción orientada al equipo de desarrollo; sin cambios de código ni de estructura de datos.
+
+1. Tarjeta KPI (dashboard)
+Redacción del título
+
+Corregir a “Recepciones con Daños” (sin salto de línea) o “Recepciones dañadas (%)” para ganar espacio y claridad.
+
+Valor principal
+
+Mantener formato porcentual con un decimal cuando sea ≥ 1 % (p. ej. 4.0 %).
+
+Eliminar duplicidad de símbolo “%” en la línea delta.
+
+Delta vs objetivo
+
+Mostrar: «↑ 2.0 pp vs 2.0 %» (diferencia en puntos porcentuales) en color rojo; aporta contexto inmediato.
+
+Badge de severidad
+
+Conservar “Crítico”, pero usar el mismo tono rojo corporativo utilizado en otras alertas (coherencia de paleta).
+
+Sparkline
+
+Aplicar gradiente gris-rojo para comunicar deterioro; grosor 2 px.
+
+Invertir eje si se decide que menor es mejor (p. ej., colocar línea base objetivo y sombreado por encima).
+
+Icono de advertencia
+
+Hacerlo del mismo tamaño que los íconos del resto de tarjetas y alinear verticalmente con el texto.
+
+2. Modal de detalle
+2.1 Encabezado y alertas
+Título único “Recepciones con Daños” + subtítulo “Análisis detallado”.
+
+Definición del indicador
+
+Convertir el cuadro azul en ícono de ayuda (tooltip) para liberar espacio.
+
+Alerta operativa roja
+
+Cambiar el texto a: «El 4 % de las recepciones presentan daños (objetivo 2 %). Revisar embalaje y manejo.»
+
+Incluir enlace “Ver recomendaciones” que abra documentación o lista de acciones correctivas.
+
+2.2 Pestaña Tendencia
+Eje Y en %; línea roja continua para objetivo; añadir banda sombreada 0 %-2 %.
+
+Tarjeta resumen
+
+Orden y formato unificado: Actual 4.0 % | Objetivo 2.0 % | Promed. 30 d 1.5 % | Desviación +2.0 pp.
+
+2.3 Pestaña Distribución
+Gráfica
+
+Cambiar columna simple a dot-plot o box-plot para resaltar variabilidad por cliente.
+
+Tabla Performance por cliente
+
+Columna “Actual ( %)” y “Objetivo ( %)” con formato de un decimal.
+
+Estado con badges Bueno / Alerta / Crítico en colores estándar.
+
+2.4 Pestaña Detalle
+Tabla principal
+
+Columnas: Orden | Cliente | Unidades recibidas | % Daños | Condición.
+
+Formato numérico coherente: «67 u» | «2.3 %».
+
+Estado: «Bueno / Crítico»; colores verde/rojo consistentes.
+
+Fila desplegable
+
+Mini-tabla por SKU con columnas: SKU | Lote | Recibidas | Dañadas | % Daño | Tipo | Estado.
+
+Resaltar % Daño en rojo si excede 2 %; en verde si 0 %.
+
+Mensaje resumen al final: «Orden ORD-DAMA…: 3 u dañadas de 67 (4.5 %), principal causa: humedad.»
+
+Botón Exportar CSV
+
+Mantener en la esquina superior derecha para coherencia.
+
+3. Coherencia y accesibilidad global
+Unidades: usar “u” para unidades y “%” para porcentajes; evitar repetir la palabra “porcentaje”.
+
+Color semáforo: idéntico en tarjeta, alertas, badges y tablas (verde, ámbar, rojo).
+
+Tipografía: valor KPI 32–36 px; unidades 14 px; labels y ejes 12 px.
+
+Leyenda y tooltips: describir claramente «Valor Actual» (línea/columnas azules) y «Objetivo» (línea roja).
+
+Accesibilidad: incluir aria-label en iconos de advertencia y enlaces “Ver recomendaciones”; contrastes WCAG 2.1 AA.
+
+4. Mensajes accionables
+Cuando el KPI se encuentre en estado Crítico, mostrar en la alerta roja enlaces a:
+
+Checklist de inspección de empaques.
+
+Procedimientos de recepción segura.
+
+Contacto de soporte de calidad.
+
+Estas directrices describen qué ajustes visuales y de experiencia deben aplicarse para alinear el indicador “Recepciones con Daños” con el resto del dashboard y mejorar la interpretación operativa.

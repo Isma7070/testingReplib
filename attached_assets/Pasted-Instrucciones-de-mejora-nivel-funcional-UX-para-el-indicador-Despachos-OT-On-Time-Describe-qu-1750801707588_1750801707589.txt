@@ -1,0 +1,100 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador Despachos OT (On-Time)
+(Describe qué debe ajustarse; la implementación queda para el asistente de código.)
+
+1. Tarjeta KPI (dashboard)
+Título
+
+Cambiar a “Despachos On Time” o “Órdenes OT” para evitar la abreviatura en español/inglés mezclada.
+
+Valor principal
+
+Mantener formato con un decimal y “%” (ej.: 85.7 %).
+
+Delta
+
+Mostrar «↓ 4.3 pp vs 90 %» (puntos porcentuales) en rojo; usar flecha y color coherentes con otros KPI.
+
+Badge de estado
+
+Coherencia de color: verde (Bueno ≥ objetivo), ámbar (90 %–< objetivo), rojo (< 90 %).
+
+Sparkline
+
+Trazar sombra verde para valores ≥ 90 % y gris para < 90 %; ayuda a detectar rápidamente las brechas.
+
+Icono
+
+Ajustar padding para alinearse con los demás iconos de la cuadrícula.
+
+2. Modal – pestaña Tendencia
+Definición KPI
+
+Sustituir el cuadro azul por un ícono de ayuda desplegable; libera espacio vertical.
+
+Gráfica
+
+Rango Y de 70 %–100 % (o 0,8 × objetivo) para resaltar desviaciones.
+
+Añadir banda sombreada ≥ 90 % (objetivo) para contextualizar la línea de puntos rojos.
+
+Incluir línea de media móvil de 7 días para suavizar la serie.
+
+Tarjetas resumen
+
+Orden: Actual | Objetivo | Promedio 30 d | Desviación; usar formato «pp» en la desviación.
+
+3. Pestaña Distribución
+Visual
+
+Cambiar la columna única a box-plot por cliente para ilustrar variabilidad y outliers (especialmente útil si las medias son similares).
+
+Tabla “Performance por Cliente”
+
+Añadir columna «P90 (%)» o «Peor día (%)» para reflejar la consistencia y no solo el promedio.
+
+Badges: Bueno ≥ 90 %, Alerta 85 – < 90 %, Crítico < 85 %.
+
+4. Pestaña Detalle
+Tabla principal
+
+Columna “Performance” usar badges estándar:
+
+A tiempo (verde)
+
+Retraso (Crítico) (rojo)
+
+Opcional: color de fondo tenue (verde/rojo claro) para reforzar el estado.
+
+Fila desplegable
+
+Mostrar cronología con iconos: creación de orden 📝, fecha promesa 📅, fecha despachada 🚚, fecha entrega ✅.
+
+Marcar fechas clave en negrita para rápida lectura.
+
+Resumen final: «Entrega puntual (+0 días). Objetivo ≥ 90 % entregas a tiempo.»
+
+Acciones rápidas
+
+Filtro “Sólo retrasos” y “Sólo entregas críticas” encima de la tabla.
+
+Botón “Analizar causa raíz” que abra (o enlace) a registro de incidencias si está disponible.
+
+5. Coherencia y accesibilidad global
+Colores semáforo uniformes en tarjetas, tablas y badges.
+
+Tipografía: valores KPI 32–36 px; unidades 14 px; etiquetas 12 px.
+
+Unidades: siempre “%”.
+
+Leyendas y tooltips claros: «Valor Actual» (línea o barras azules) y «Objetivo» (línea roja punteada).
+
+ARIA & WCAG: etiquetas aria-label en iconos, enlaces “Ver recomendaciones” y filtros; contraste AA.
+
+6. Mensajes accionables sugeridos
+Cuando el KPI < 90 % (Crítico) mostrar alerta roja:
+
+“Los despachos a tiempo cayeron a 85.7 % (objetivo 90 %). Revisar planeación de rutas y tiempos de corte.”
+
+Enlace a documento interno “Buenas prácticas de OT” o módulo de análisis logístico.
+
+Con estas pautas, Despachos OT ofrecerá información consistente, comparativa y accionable, alineada con el resto del dashboard.

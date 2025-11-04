@@ -1,0 +1,70 @@
+Instrucciones de mejora (nivel funcional/UX) para el indicador Días On Hand (DOH)
+Guía descriptiva para el equipo de desarrollo; no incluye código ni cambios en el modelo de datos.
+
+1. Tarjeta KPI (dashboard)
+Unificar unidad: mostrar el valor como «49.5 d» y eliminar el texto “días” que aparece a la derecha para evitar duplicidad.
+
+Etiqueta de severidad: mantener el badge “Crítico” pero alinear color con la paleta de semáforo (rojo corporativo) y usar tipografía seminegrita.
+
+Delta vs objetivo: cambiar a formato «↑ 34.5 d vs 15 d» (valor objetivo abreviado) para mejorar lectura rápida.
+
+Sparkline: engrosar la línea y usar un gradiente que parta de gris a rojo para reforzar el mensaje de sobre-stock.
+
+Ícono calendario: centrar verticalmente respecto al texto y considerar fondo transparente si el mismo icono aparece en otros KPI.
+
+2. Modal de detalle
+Título: mostrar únicamente «Días On Hand» con subtítulo “Análisis detallado”; evitar la repetición doble.
+
+Definición del KPI: convertir el cuadro azul en un ícono de ayuda con tooltip o acordeón, dejando más espacio a las gráficas.
+
+Tarjetas resumen bajo la gráfica:
+
+Unificar unidades («49.5 d», «15 d», «18.7 d»).
+
+Orden sugerido: Actual | Objetivo | Promedio 30 d | Desviación.
+
+Gráfica de tendencia: añadir una banda sombreada que represente el rango objetivo (p.ej. 12–18 d) para contextualizar la línea roja de objetivo.
+
+3. Pestaña “Distribución”
+Tipo de visual: sustituir la columna simple por box-plot o dot-plot para mostrar dispersión de DOH por cliente; facilita detectar outliers.
+
+Hover: incluir tooltip con percentil P50, P75 y máximo por cliente.
+
+Tabla “Performance por cliente”:
+
+Columnas «Actual (d)», «Objetivo (d)», «Órdenes», «Estado».
+
+Usar los mismos badges de estado (Bueno/Alerta/Crítico) y colores de la tarjeta principal.
+
+4. Pestaña “Detalle”
+Unidades abreviadas: columnas «Stock Actual», «Días Disponibles» → mostrar “4837 u” y “19 d”.
+
+Estado: renombrar “Stock Normal” a categorías más accionables (p.ej. Normal / Sobre-Stock / Obsoleto) con color consistente.
+
+Fila desplegable (SKU):
+
+Redondear las cifras de demanda a enteros y días a un decimal.
+
+Usar bullets o iconos para etapas (stock, demanda, cobertura) en lugar de texto corrido.
+
+Mostrar un pequeño gráfico mini-barra o termómetro que compare días de cobertura vs objetivo.
+
+Botón Exportar: mantener en la barra superior (zona derecha) para coherencia con otros indicadores.
+
+5. Coherencia y accesibilidad global
+Paleta de colores: rojo (Crítico), ámbar (Alerta), verde (Normal) idénticos en tarjeta, tablas y badges.
+
+Tipografía: valor KPI 32–36 px; unidades 14 px; labels y ejes 12 px.
+
+Leyenda y tooltips: en todas las gráficas incluir descripción clara “Valor Actual” (línea azul) y “Objetivo” (línea roja).
+
+Unidades abreviadas: utilizar siempre «d» (días), «u» (unidades) para evitar redundancia de texto.
+
+Accesibilidad: añadir aria-label a iconos y badges; verificar contraste WCAG 2.1 AA.
+
+6. Mensajes de alerta y storytelling
+Cuando el DOH se encuentre en estado Crítico (> objetivo × 2), mostrar mensaje contextual:
+
+“El inventario actual cubre 49.5 días de demanda, excediendo el objetivo de 15 días. Revisar políticas de reabastecimiento.”
+
+Incluir un enlace o botón “Ver recomendaciones” que apunte al módulo de planificación de inventario (si existe).

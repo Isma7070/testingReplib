@@ -1,0 +1,87 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador Productividad
+(Qué debe optimizarse; la implementación técnica queda a cargo del asistente de código.)
+
+1. Calidad de datos y consistencia de unidades
+Hallazgo	Acción recomendada
+El KPI muestra 0 u/h cuando sí existen registros de rendimiento individuales.	1) Validar en ETL que el cálculo agregado (∑ unidades ÷ ∑ horas) utilice las mismas ventanas de tiempo y filtros que la tabla de detalle.
+2) Si no hay datos para el rango, mostrar badge gris “Sin registros” y ocultar sparkline.
+Mezcla de “u/h” y “unidades” en tarjetas, gráficas y tablas.	Definir “u/h” (unidades por hora) como única unidad para el KPI agregados; cuando se muestren totales de unidades procesadas, agregar columna explícita “Unidades”.
+
+2. Tarjeta KPI (dashboard)
+Título: cambiar a “Productividad despacho” con tooltip “Unidades enviadas por hora-persona”.
+
+Delta: formato «↓ 160 u/h vs 160 u/h» confuso si el valor real es 0. Cambiar a «– 160 u/h por debajo de la meta» (cuando el valor sea 0 o ND).
+
+Badge: usar Crítico (rojo) solo si el valor < 80 % del objetivo y hay datos válidos; de lo contrario badge gris ND.
+
+Sparkline: mostrar banda verde ≥ 100 u/h y gris por debajo. Ocultar si no hay series válidas.
+
+3. Pestaña Tendencia
+Observación	Mejora
+Gráfica sin media móvil ni suavizado.	Añadir media móvil de 7 días (línea gris) para tendencias.
+Objetivo fijo 90 u/h en rojo, pero meta mostrada abajo es 160 u/h.	Sincronizar: meta gráfica = meta actual (160 u/h).
+Eje Y arranca en 0 u/h y llega a 180 u/h, pero banda interesante está entre 80-180.	Establecer rango dinámico 60-200 u/h para mayor resolución.
+
+Tarjetas resumen: Actual | Objetivo | Promed. 30 d | Desviación (u/h).
+
+4. Pestaña Distribución
+Tipo de visual: sustituir columna promedio por box-plot por cliente o violin plot para ilustrar dispersión y detectar picos de baja productividad.
+
+Tabla Performance por Cliente
+
+Columnas: Actual (u/h) | Objetivo (u/h) | Órdenes | Estado.
+
+Badges: Verde ≥ objetivo; Ámbar 80-< 100 %; Rojo < 80 %.
+
+Añadir columna P10 (u/h) para ver días más lentos de cada cliente.
+
+5. Pestaña Detalle – enfoque “empleado ➝ SKU”
+Tabla principal
+
+Columna	Formato	Notas
+Empleado	Texto	Click abre perfil si existe.
+Cliente	Texto	Filtro chip por cliente.
+Horas Trabajadas	7 h	Redondear a 0.1 h.
+Unidades Procesadas	155 u	Alineado derecha.
+Productividad (u/h)	22.1 u/h	Calculada.
+Estado	Badge (Meta / Crítico / Bajo)	Verde ≥ meta; Ámbar 80-< 100 %; Rojo < 80 %.
+
+Fila desplegable (reemplaza barra de progreso)
+
+Tabla SKU: SKU | Descripción | Ubicación | Cant. procesada | Cant. objetivo (si aplica) | Estado línea (✓ / ✕).
+
+Pestaña secundaria “Bloques de tiempo”: muestra unidades por hora o por bloque de 2 h para visualizar la curva de rendimiento.
+
+Tarjeta resumen al pie: Total unidades · Productividad calculada · Meta · % Cumplimiento.
+
+Filtros rápidos (sobre tabla)
+
+Cliente, Turno, Estado (Meta / Bajo / Crítico).
+
+Búsqueda por SKU dentro del detalle para localizar errores.
+
+6. Estados y colores
+Color	Uso
+#28A745 (verde)	Meta alcanzada o superada
+#FFC107 (ámbar)	80-< 100 % meta
+#C82333 (rojo)	< 80 % meta
+#6C757D (gris)	Sin datos
+
+Añadir iconos ✓ / ⚠️ / ✕ complementarios para accesibilidad cromática.
+
+7. Mensajes y excepciones
+Situación	Mensaje
+Productividad 0 u/h con registros nulos	“Sin turnos registrados en el periodo seleccionado.”
+Horas trabajadas = 0	“Duración de turno no disponible; verifique fichajes.”
+Unidades procesadas con valores negativos (devoluciones mal cargadas)	“Registro inválido; revisar captura.”
+
+8. Accesibilidad y UX global
+Tipografía: valores 32-36 px (tarjeta), 14 px (unidades), 12 px (labels).
+
+Tooltips / aria-label: para iconos, badges y cabeceras.
+
+Export CSV: ofrecer opción “Detalle SKU” además de resumen por empleado.
+
+Contraste: badges ámbar y rojo deben cumplir WCAG 2.1 AA.
+
+Implementando este desglose se obtendrá una visión clara de qué se procesó, quién lo hizo y cuándo, permitiendo entrenar a los operarios con baja productividad y optimizar zonas de picking específicas.

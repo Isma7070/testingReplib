@@ -1,0 +1,107 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador Exactitud de Picking
+Aclara qué hay que ajustar; el “cómo” lo implementará el asistente de código.
+
+1. Tarjeta KPI (dashboard)
+Valor 0 %
+
+Detectar si es una ausencia de datos (null) o un resultado real; si es “sin datos”, mostrar estado Sin registros con icono ⏸ y color gris.
+
+Delta
+
+Formato uniforme: «↓ 98.0 pp vs 98 %» (puntos porcentuales), flecha y texto rojo.
+
+Badge de severidad
+
+Usar “Crítico” solo cuando exista volumen de líneas; si el KPI está sin datos, utilizar badge gris “ND”.
+
+Sparkline
+
+Si no hay datos, ocultar la línea o mostrar placeholder (“—”).
+
+Cuando sí haya datos, aplicar degradado gris → rojo y grosor 2 px.
+
+Icono mano
+
+Alinear verticalmente con el texto; verificar contraste (relleno rojo #C82333 con trazo blanco para AA).
+
+2. Modal – pestaña Tendencia
+Estado “sin datos”
+
+Si la serie es 0 % por falta de registros, mostrar mensaje banner amarillo: «Sin conteos de picking registrados en el periodo seleccionado».
+
+Escala eje Y
+
+Rango dinámico 90 % – 100 % (si hay datos) para resaltar variaciones finas; si no, ocultar la gráfica y mostrar placeholder “Sin datos”.
+
+Banda objetivo
+
+Sombrear ≥ 98 % para contextualizar la línea de objetivo roja.
+
+Tarjetas resumen
+
+Actual | Objetivo | Promed. 30 d | Desviación → ocultar o mostrar “–” cuando no existan datos.
+
+3. Pestaña Distribución
+Visual
+
+Sustituir columnas por dot-plot de precisión por cliente (cada punto = orden), útil para detectar dispersiones de 95 %–100 %.
+
+Tabla “Performance por Cliente”
+
+Columna “Órdenes con error (%)” para dimensionar la criticidad.
+
+Badges:
+
+Verde ≥ 99 %
+
+Ámbar 97 %–< 99 %
+
+Rojo < 97 %
+
+4. Pestaña Detalle
+Tabla principal
+
+Columnas: Orden | Cliente | Líneas solicitadas | Líneas pickeadas | Exactitud.
+
+Exactitud 100 % badge verde “Exacto”; < 100 % badge rojo “Error”.
+
+Diferencia negativa o positiva en otra columna opcional (± líneas).
+
+Fila desplegable
+
+Subtabla: SKU | Ubicación | Solicitado | Pickeado | Diferencia | Motivo | Estado.
+
+Motivos estándar: Ubicación incorrecta, Falta de stock, Error de captura, etc.
+
+Iconos ✓ / ✖ con color ciego friendly (verde / rojo + forma).
+
+Registro rápido de causa
+
+Añadir combo editable “Motivo” para que el supervisor pueda etiquetar la causa desde el dashboard (fase futura).
+
+5. Manejo de vacíos y excepciones
+Escenario	Comportamiento UI	Mensaje sugerido
+Sin líneas pickeadas	Tarjeta muestra “ND”, sparkline oculto, badge gris.	“No se registraron órdenes pickeadas en el periodo.”
+< 5 órdenes	Mostrar KPI pero con nota asterisco explicando baja base estadística.	“Volumen bajo: interpretar con precaución.”
+
+6. Coherencia y accesibilidad
+Colores semáforo: verde #28A745, ámbar #FFC107, rojo #C82333 — idénticos en tarjetas, tablas y badges.
+
+Tipografía: valor KPI 32–36 px; unidades 14 px; labels 12 px.
+
+Unidades: siempre “%”.
+
+Tooltips: definir leyendas claras en gráficas; icono mano con aria-label="Exactitud de picking".
+
+Contraste: verificar badges y texto rojo sobre fondo blanco (WCAG 2.1 AA).
+
+7. Acciones recomendadas (enlace “Ver recomendaciones”)
+Revisión de capacitación al personal de preparación.
+
+Uso obligatorio de escáner para confirmación de SKU y cantidad.
+
+Auditorías de conteo a ciegas en rutas de alto error.
+
+Incrementar validación en líneas con diferencia recurrente (SKU o zona específica).
+
+Con estas mejoras, el indicador de Exactitud de Picking entregará información confiable, resaltará de inmediato las fallas reales y evitará falsos “Críticos” por falta de datos.

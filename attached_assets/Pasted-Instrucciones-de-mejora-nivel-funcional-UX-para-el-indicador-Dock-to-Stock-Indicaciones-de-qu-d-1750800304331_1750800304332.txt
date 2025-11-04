@@ -1,0 +1,59 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador Dock-to-Stock
+Indicaciones de qué debe afinarse; la implementación concreta queda para el asistente de código.
+
+1. Tarjeta KPI (dashboard)
+Icono: revisar el padding lateral para que quede alineado con el texto y evitar que “salte” respecto a otras tarjetas.
+
+Sparkline: añadir una línea de referencia punteada en 4 h (objetivo) o sombrear la zona 0 – 4 h para reforzar que «menos es mejor».
+
+Badge “Bueno”: confirmar que el tono verde sea exactamente el mismo usado en las chips de estado dentro de tablas (coherencia de paleta).
+
+2. Modal – pestaña Tendencia
+Definición KPI (cuadro azul): migrar a tooltip desplegable (ícono “?”) para liberar espacio vertical.
+
+Gráfica
+
+Incorporar una media móvil de 7 días (línea fina gris) que ayude a ver la tendencia sin ruido diario.
+
+El eje Y puede iniciarse en 0 h, pero si la mayoría de valores oscila entre 0–6 h, ajustar rango dinámico (p. ej. 0–8 h) para que la variación sea apreciable.
+
+Tarjetas resumen: Actual | Objetivo | Promedio 30d | Desviación están correctas, solo verificar que todas las unidades se muestren como «h» (sin “hrs”).
+
+3. pestaña Distribución
+Reemplazar las columnas por un box-plot o strip-plot por cliente para mostrar mediana y dispersión; la barra fija oculta la variabilidad.
+
+En la tabla Performance por Cliente, añadir una columna «Percentil P90 (h)» para que el usuario vea los peores casos de cada cuenta.
+
+Definir reglas de color uniformes en los badges:
+
+Verde = ≤ objetivo.
+
+Ámbar = entre 100 % y 110 % del objetivo.
+
+Rojo = > 110 % del objetivo.
+
+4. pestaña Detalle
+Tabla principal
+
+Cambiar etiqueta “Excede el tiempo permitido, revisar proceso” por el badge rojo estándar “Crítico” y un tooltip que explique la causa; evita saturar la celda de texto largo.
+
+Fila desplegable
+
+Formato de horas: usar «HH:mm» o «1.3 h»; abstenerse de notación “10.13”.
+
+El mensaje resumen muestra «Objetivo: 24 h»; corregir para que tome el mismo objetivo global (4 h).
+
+Aplicar iconos diferenciados para cada etapa (camión 🚚, descarga ⬇️, inspección 🔍, stock 📦) con leyenda breve.
+
+Habilitar un filtro rápido “Mostrar solo retrasos” arriba de la tabla, de modo que el usuario pueda centrarse en los casos críticos.
+
+5. Coherencia y accesibilidad
+Paleta: mismo verde (#28A745), ámbar (#FFC107), rojo (#C82333) en tarjetas, tablas y badges.
+
+Tipografía: valores KPI 32–36 px; unidades 14 px; labels 12 px.
+
+Unidades: mantener «h» en todo el flujo (sin “hrs”).
+
+Tooltips y ARIA: a) icono de ayuda; b) barras/box-plots; c) badges de estado. Cumplir WCAG 2.1 AA.
+
+Con estas mejoras el indicador Dock-to-Stock conservará la simplicidad lograda pero ofrecerá contexto visual consistente, métricas comparables y mensajes claros de acción.

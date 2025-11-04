@@ -1,0 +1,62 @@
+Instrucciones de mejora para la sección Datos Detallados del indicador Productividad
+(Objetivo: sustituir la barra-estado actual por un desglose claro de los SKU y cantidades alistadas. Solo describe qué se debe cambiar; la implementación técnica la abordará el asistente de código.)
+
+1. Nuevo esquema visual
+Nivel	Componente	Contenido propuesto	Propósito
+Tabla principal	Fila por empleado (o tarea)	• Empleado
+• Cliente
+• Horas trabajadas
+• Unidades procesadas totales
+• % Meta cumplida
+• Estado (emoji/badge)	Resumen rápido y clic para expandir.
+Fila desplegable	Tab “Detalle SKU” (por defecto)	Tabla anidada:
+SKU | Descripción | Ubicación | Cantidad procesada	Mostrar exactamente qué se alistó.
+Tab “Bloques de tiempo” (opcional)	Tabla:
+Bloque hora | Unidades procesadas	Permite ver picos de rendimiento.
+Tarjeta resumen inferior	• Total unidades
+• Rendimiento u/h	Valida las sumatorias y la productividad calculada.
+
+2. Columnas de la subtabla Detalle SKU
+Columna	Formato	Notas de UX
+SKU	Texto fijo (monoespaciado)	Vincular a ficha SKU si existe.
+Descripción	Texto truncado con tooltip completo	Evita columnas anchas.
+Ubicación	Ej. “B-17-5”	Fondo gris claro para diferenciar.
+Cantidad procesada	Número alineado a la derecha	Resaltar en verde si ≥ cantidad solicitada y en rojo si faltante/exceso.
+
+3. Estados y colores
+Estado Línea SKU	Condición	Badge / Icono
+Correcto	Cantidad procesada = solicitada	✓ verde
+Faltante	Procesada < solicitada	◦ ámbar
+Exceso	Procesada > solicitada	✕ rojo
+
+Para la fila del empleado, usar badges: Meta alcanzada (verde ≥ 100 u/h), Bajo meta (ámbar 80-99 u/h), Crítico (rojo < 80 u/h).
+
+4. Flujo de interacción
+Clic en la fila ► se abre el panel detallado.
+
+Detalle SKU se muestra primero.
+
+Pestañas secundarias permiten cambiar a Bloques de tiempo o, a futuro, Errores de picking.
+
+Un botón “CSV SKU” exporta exclusivamente la tabla de detalle.
+
+5. Gestión de datos
+Para poblar la subtabla SKU se requieren los campos:Empleado_ID, SKU, Descripcion, Ubicacion, Cantidad_Procesada, Cantidad_Solicitada.
+
+Si un turno no tiene breakdown de SKU (datos faltantes), mostrar banner informativo “Sin desglose SKU disponible para este turno”.
+
+6. Accesibilidad y legibilidad
+Alineación numérica derecha; títulos en 12 px seminegrita.
+
+Usar colores semáforo corporativos (#28A745, #FFC107, #C82333); agregar iconografía para daltónicos.
+
+aria-label descriptivos en los iconos de estado y en las pestañas internas.
+
+7. Mensajes contextuales
+Si la productividad total es 0 u/h, mostrar texto gris “Sin registros para el lapso seleccionado” y ocultar la tabla SKU.
+
+Al final del panel, tarjeta resumen:
+
+“Producto total: 545 u · Promedio: 109 u/h · Meta: 100 u/h · Estado: Meta alcanzada”.
+
+Implementando este desglose, los usuarios podrán ver exactamente qué SKU se alistó, cuántas unidades y dónde, facilitando la detección de errores de preparación y la capacitación específica por producto o zona.

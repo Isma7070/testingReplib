@@ -1,0 +1,99 @@
+Instrucciones de mejora (nivel funcional / UX) para el indicador Lead Time Interno
+(Describe qué debe pulirse; el asistente de código decidirá cómo implementarlo).
+
+1. Calidad de datos y unidades
+Problema detectado	Acción propuesta
+Valor negativo (–14.9 d) en la tarjeta.	1) Agregar validación ETL: si TS Ready < TS Liberación registrar la orden como inconsistencia y excluirla del KPI.
+2) Mostrar badge gris “Datos inválidos” cuando el valor resultante sea negativo.
+Mezcla de “días” y “horas” en las vistas (trend en días, tabla en horas).	Definir unidad oficial horas (h) para todo el KPI:
+• Convertir siempre a horas con 1 decimal.
+• Cambiar eje Y, tarjetas resumen y etiquetas a “h”.
+
+2. Tarjeta KPI (dashboard)
+Título: mantener “Lead Time Interno” pero añadir tooltip “Horas desde liberación hasta listo para embarque”.
+
+Valor principal: si no hay error de datos, mostrar con 1 decimal y “h” (ej. 45.8 h).
+
+Delta: formato «↓ 43.8 h vs 48 h» (pp no aplica).
+
+Badge de estado:
+
+Verde = ≤ objetivo (≤ 48 h).
+
+Ámbar = > objetivo hasta +20 %.
+
+Rojo = > objetivo + 20 %.
+
+Sparkline: grosor 2 px; sombrear zona verde (0–48 h). Si no hay datos válidos → placeholder “—”.
+
+3. Modal – pestaña Tendencia
+Mensaje azul: migrar a ícono de ayuda desplegable para liberar espacio.
+
+Gráfica:
+
+Eje Y en horas, rango dinámico (0 h – 60 h).
+
+Banda sombreada 0 – 48 h (objetivo) como zona verde.
+
+Incluir media móvil de 7 d para suavizar puntos.
+
+Tarjetas resumen:
+
+Actual | Objetivo | Promed. 30 d | Desviación (en horas).
+
+Ocultar valores o mostrar “ND” si no hay órdenes válidas.
+
+4. Pestaña Distribución
+Cambiar columnas por box-plot de lead-time por cliente; permite ver dispersiones y outliers.
+
+Tabla Performance por Cliente:
+
+Columnas: Actual (h) | Objetivo (h) | Órdenes | Estado.
+
+Badges según reglas de estado citadas arriba.
+
+Añadir columna “P90 (h)” para que el cliente vea el peor 10 % de sus órdenes.
+
+5. Pestaña Detalle
+Tabla principal
+
+Columnas: Orden | Cliente | Unidades | Lead Time (h) | Objetivo | Estado.
+
+Estado badges: Verde “Dentro”, Rojo “Fuera”.
+
+Fila desplegable
+
+Línea de tiempo con iconos: liberación 🟢 | procesamiento 🟡 | preparación 🟡 | listo 🟢.
+
+Mostrar duración de cada fase en horas, sumar total.
+
+Mensaje de resultado: «Lead Time: 76.9 h (objetivo 48 h) – excede por 28.9 h, revisar etapa ‘Preparación’».
+
+Filtros rápidos: switches “Sólo fuera de objetivo” y “> 24 h de retraso” sobre la tabla.
+
+6. Manejo de errores y vacíos
+Escenario	UI	Mensaje sugerido
+Valor negativo	Mostrar “ND” y badge gris “Datos inválidos”; registrar inconsistencia en log.	
+Sin órdenes en periodo	Tarjeta con “0 h” y badge gris “Sin registros” + sparkline oculto.	
+
+7. Coherencia & accesibilidad
+Unidades estandarizadas: siempre h (horas).
+
+Paleta: verde #28A745, ámbar #FFC107, rojo #C82333 coherentes.
+
+Tipografía: valores 32–36 px, unidades 14 px, labels 12 px.
+
+Tooltips y aria-label para iconos e información de ayuda.
+
+Contraste: verificar badges y texto rojo/ámbar sobre fondo blanco (WCAG 2.1 AA).
+
+8. Acciones correctivas (enlace “Ver recomendaciones”)
+Priorizar órdenes urgentes en cola de preparación.
+
+Implementar señalización visual de SLA en el piso.
+
+Reducir tiempos de espera entre procesamiento y preparación (habilitar picking paralelo).
+
+Revisar capacidad de packing para evitar cuellos de botella en horas pico.
+
+Con estas mejoras, el indicador Lead Time Interno mostrará información fiable, coherente con las unidades correctas y ofrecerá contexto accionable sin confusión por valores negativos o métricas mezcladas.
